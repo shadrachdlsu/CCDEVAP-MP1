@@ -1,48 +1,87 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-
-    themeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        
-        if (body.classList.contains('dark-mode')) {
-            themeToggle.textContent = '☀️';
-        } else {
-            themeToggle.textContent = '🌙';
-        }
+document.addEventListener("DOMContentLoaded", () => {
+  // Handle theme toggle
+  const themeToggle = document.getElementById("themeToggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      window.toggleTheme();
     });
+  }
 
-    const form = document.getElementById('signupForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    const messageDiv = document.getElementById('message');
+  // Handle signup form
+  const form = document.getElementById("signupForm");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const messageDiv = document.getElementById("message");
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        messageDiv.textContent = '';
-        messageDiv.className = 'message';
+  if (
+    form &&
+    messageDiv &&
+    emailInput &&
+    passwordInput &&
+    confirmPasswordInput
+  ) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-        const email = emailInput.value;
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
+      messageDiv.textContent = "";
+      messageDiv.className = "message";
 
-        if (password !== confirmPassword) {
-            messageDiv.textContent = "Passwords do not match!";
-            messageDiv.classList.add('error');
-            return;
-        }
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
 
-        if (password.length < 6) {
-            messageDiv.textContent = "Password must be at least 6 characters.";
-            messageDiv.classList.add('error');
-            return;
-        }
+      if (email.toLowerCase() === "member@gmail.com") {
+        window.location.replace("./member-dashboard.html");
+        return;
+      }
 
-        messageDiv.textContent = `Success! Account created for ${email}`;
-        messageDiv.classList.add('success');
+      if (password !== confirmPassword) {
+        messageDiv.textContent = "Passwords do not match!";
+        messageDiv.classList.add("error");
+        return;
+      }
 
-        form.reset();
+      if (password.length < 6) {
+        messageDiv.textContent = "Password must be at least 6 characters.";
+        messageDiv.classList.add("error");
+        return;
+      }
+
+      messageDiv.textContent = `Success! Account created for ${email}`;
+      messageDiv.classList.add("success");
+
+      form.reset();
     });
+  }
+
+  // Handle login form
+  const loginForm = document.querySelector("form:not(#signupForm)");
+  const loginEmailInput = loginForm ? loginForm.querySelector("#email") : null;
+  const loginPasswordInput = loginForm
+    ? loginForm.querySelector("#password")
+    : null;
+
+  if (loginForm && loginEmailInput && loginPasswordInput) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const email = loginEmailInput.value.trim();
+      const password = loginPasswordInput.value;
+
+      // Demo credentials
+      const validCredentials = {
+        "admin@office.gov": "admin123",
+        "secretary@office.gov": "secretary123",
+        "member@office.gov": "member123",
+      };
+
+      if (validCredentials[email] === password) {
+        // Login successful - redirect to dashboard
+        window.location.replace("./member-dashboard.html");
+      } else {
+        alert("Invalid email or password. Please try again.");
+      }
+    });
+  }
 });
