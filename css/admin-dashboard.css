@@ -7,6 +7,25 @@
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* shadow */
 }
 
+/* Dark Mode */
+body.dark-mode {
+    --bg-color: #121212;       
+    --card-bg: #1e1e1e;       
+    --text-main: #ffffff;  
+    --text-muted: #aaaaaa;   
+    
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.4); 
+}
+
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.stat-card, .action-card, .admin-header {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 * {
     margin: 0;
     padding: 0;
