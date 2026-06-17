@@ -4,19 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Docuflow - Member Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <link rel="stylesheet" href="../css/member-dashboard.css" />
   </head>
   <body class="member-body">
-    <header class="topbar">
+    <header class="member-header">
       <div class="header-left">
         <div class="logo-area">
-          <span class="web-logo">📄 Docuflow</span>
-        </div>
-        <div class="header-title-area">
-          <h1 class="office-title">Member Dashboard</h1>
-          <p class="page-subtitle">
-            Review &amp; sign documents for your office
-          </p>
+          <span class="web-logo">Docuflow</span>
         </div>
       </div>
       <div class="header-right">
@@ -27,83 +25,63 @@
         <div class="header-actions">
           <button
             id="themeToggle"
-            class="icon-btn"
+            class="icon-btn toggle-theme"
             type="button"
             aria-label="Toggle dark/light mode"
           >
-            <span class="moon-icon">☾</span>
-            <span class="sun-icon">☀</span>
+            <i class="fas fa-moon"></i>
+          </button>
+          <button
+            class="icon-btn logout-btn"
+            type="button"
+            aria-label="Exit / Logout"
+          >
+            <i class="fas fa-sign-out-alt"></i>
           </button>
         </div>
       </div>
     </header>
 
-    <section class="stats-row">
-      <div class="stat-card">
-        <div class="stat-number">3</div>
-        <div class="stat-label">Pending Signatures</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">7</div>
-        <div class="stat-label">Signed Today</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">142</div>
-        <div class="stat-label">Total Signed</div>
-      </div>
-    </section>
-
-    <main class="dashboard-grid">
-      <section class="left-panel">
-        <div class="panel-card">
-          <div class="panel-header">
-            <h2>Pending Signatures</h2>
-            <a class="view-all" href="#">View All</a>
-          </div>
-
-          <div id="pending-list" class="pending-list">
-            <article class="pending-item">
-              <div class="meta">
-                DOC-2024-045 <span class="priority high">High</span>
-              </div>
-              <h3>Annual Budget Allocation Request</h3>
-              <div class="sub">Budget Proposal · Finance Office</div>
-              <div class="time">2 hours ago</div>
-            </article>
-
-            <article class="pending-item">
-              <div class="meta">
-                DOC-2024-046 <span class="priority medium">Medium</span>
-              </div>
-              <h3>IT Equipment Procurement Plan</h3>
-              <div class="sub">Requisition · IT Department</div>
-              <div class="time">5 hours ago</div>
-            </article>
-
-            <article class="pending-item">
-              <div class="meta">
-                DOC-2024-047 <span class="priority low">Low</span>
-              </div>
-              <h3>Employee Training Program Proposal</h3>
-              <div class="sub">Memorandum · HR Office</div>
-              <div class="time">1 day ago</div>
-            </article>
-          </div>
-        </div>
+    <main class="member-main">
+      <section class="stats-row">
+        <button class="stat-card" type="button">
+          <span class="stat-number">3</span>
+          <span class="stat-label">Pending Signed</span>
+        </button>
+        <button class="stat-card" type="button">
+          <span class="stat-number">7</span>
+          <span class="stat-label">Signed Today</span>
+        </button>
+        <button class="stat-card" type="button">
+          <span class="stat-number">142</span>
+          <span class="stat-label">Total Signed</span>
+        </button>
       </section>
 
-      <section class="right-panel">
-        <div id="preview-panel" class="panel-card preview-card">
-          <div class="preview-empty">
-            <div class="preview-icon">🗂️</div>
-            <h3>Select a Document</h3>
-            <p>Choose a document from the list to preview and take action</p>
+      <section class="dashboard-grid">
+        <section
+          class="panel-card member-chart-panel"
+          id="pending-chart-panel"
+          style="display: none"
+        >
+          <div class="panel-header">
+            <div>
+              <h2 class="section-title">Pending Signed Distribution</h2>
+            </div>
           </div>
-        </div>
+          <div id="pending-chart-content" class="member-chart-content"></div>
+        </section>
+
+        <section class="panel-card documents-panel">
+          <div class="panel-header">
+            <h2 class="section-title" id="documents-title">Pending Signed</h2>
+            <button class="view-all" type="button">View All</button>
+          </div>
+          <div id="pending-list" class="pending-list"></div>
+        </section>
       </section>
     </main>
 
-    <script src="../js/theme.js"></script>
     <script src="../js/member-dashboard.js"></script>
   </body>
 </html>

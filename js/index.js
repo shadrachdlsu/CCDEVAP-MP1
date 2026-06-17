@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirmPassword");
+  const officeSelect = document.getElementById("officeSelect");
   const messageDiv = document.getElementById("message");
 
   if (
@@ -11,7 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     messageDiv &&
     emailInput &&
     passwordInput &&
-    confirmPasswordInput
+    confirmPasswordInput &&
+    officeSelect
   ) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -40,7 +42,15 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      messageDiv.textContent = `Success! Account created for ${email}`;
+      const selectedOffice = officeSelect.value;
+
+      if (!selectedOffice) {
+        messageDiv.textContent = "Please select your office.";
+        messageDiv.classList.add("error");
+        return;
+      }
+
+      messageDiv.textContent = `Success! Account created for ${email} in ${selectedOffice}.`;
       messageDiv.classList.add("success");
 
       form.reset();
