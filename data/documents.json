@@ -1,17 +1,64 @@
 [
-    {
-        "title":"Budget Proposal",
-        "type":"Proposal",
-        "status":"Pending"
-    },
-    {
-        "title":"Department Memorandum",
-        "type":"Memo",
-        "status":"Approved"
-    },
-    {
-        "title":"Clearance Form",
-        "type":"Clearance",
-        "status":"Rejected"
-    }
+  {
+    "id": "doc-2024-045",
+    "docNumber": "DOC-2024-045",
+    "priority": "High",
+    "title": "Annual Budget Allocation Request",
+    "category": "Budget Proposal",
+    "department": "Finance Office",
+    "uploadedAt": "2026-06-16T09:00:00Z",
+    "status": "Pending",
+    "url": "../views/document-view.html?id=doc-2024-045",
+    "file": "../pdfs/doc-2024-045.pdf"
+  },
+  {
+    "id": "doc-2024-046",
+    "docNumber": "DOC-2024-046",
+    "priority": "Medium",
+    "title": "IT Equipment Procurement Plan",
+    "category": "Requisition",
+    "department": "IT Department",
+    "uploadedAt": "2026-06-16T06:30:00Z",
+    "signedAt": "2026-06-16T11:00:00Z",
+    "status": "Signed",
+    "url": "../views/document-view.html?id=doc-2024-046",
+    "file": "../pdfs/doc-2024-046.pdf"
+  },
+  {
+    "id": "doc-2024-047",
+    "docNumber": "DOC-2024-047",
+    "priority": "Low",
+    "title": "Employee Training Program Proposal",
+    "category": "Memorandum",
+    "department": "HR Office",
+    "uploadedAt": "2026-06-15T08:00:00Z",
+    "status": "Pending",
+    "url": "../views/document-view.html?id=doc-2024-047",
+    "file": "../pdfs/doc-2024-047.pdf"
+  },
+  {
+    "id": "doc-2024-048",
+    "docNumber": "DOC-2024-048",
+    "priority": "Medium",
+    "title": "Procurement Approval - Stationery",
+    "category": "Purchase",
+    "department": "Logistics",
+    "uploadedAt": "2026-06-14T10:00:00Z",
+    "signedAt": "2026-06-15T14:00:00Z",
+    "status": "Signed",
+    "url": "../views/document-view.html?id=doc-2024-048",
+    "file": "../pdfs/doc-2024-048.pdf"
+  },
+  {
+    "id": "doc-2024-049",
+    "docNumber": "DOC-2024-049",
+    "priority": "Low",
+    "title": "Clearance Form - Visitor",
+    "category": "Clearance",
+    "department": "Admin",
+    "uploadedAt": "2026-06-10T12:00:00Z",
+    "status": "Rejected",
+    "url": "../views/document-view.html?id=doc-2024-049",
+    "file": "../pdfs/doc-2024-049.pdf"
+  }
 ]
