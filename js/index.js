@@ -1,12 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Handle theme toggle
-  const themeToggle = document.getElementById("themeToggle");
-  if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
-      window.toggleTheme();
-    });
-  }
-
   // Handle signup form
   const form = document.getElementById("signupForm");
   const emailInput = document.getElementById("email");

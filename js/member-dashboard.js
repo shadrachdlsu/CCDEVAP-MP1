@@ -1,189 +1,261 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const DATA_URL = "../data/documents.json";
+  const pendingList = document.getElementById("pending-list");
+  const previewPanel = document.getElementById("preview-panel");
+  const statPending = document.querySelector(
+    ".stats-row .stat-card:nth-child(1)",
+  );
+  const statSignedToday = document.querySelector(
+    ".stats-row .stat-card:nth-child(2)",
+  );
+  const statTotalSigned = document.querySelector(
+    ".stats-row .stat-card:nth-child(3)",
+  );
 
-let selectedDocument = null;
+  let docs = [];
+  let currentItems = [];
+  let selectedDoc = null;
+  let currentFilter = "pending";
 
-fetch("../data/documents.json")
-.then(function(response){
+  function getFilteredItems() {
+    const now = new Date();
 
-    if(!response.ok){
-        throw new Error("Unable to load documents.");
+    if (currentFilter === "pending") {
+      return docs.filter((d) => d.status.toLowerCase() === "pending");
     }
 
-    return response.json();
-})
-.then(function(documents){
-
-    let tableBody =
-        document.getElementById(
-            "documents-table-body"
+    if (currentFilter === "today") {
+      return docs.filter((d) => {
+        if (!d.signedAt) return false;
+        const dt = new Date(d.signedAt);
+        return (
+          dt.getFullYear() === now.getFullYear() &&
+          dt.getMonth() === now.getMonth() &&
+          dt.getDate() === now.getDate()
         );
+      });
+    }
 
-    let pendingCount = 0;
-    let approvedCount = 0;
-    let rejectedCount = 0;
+    if (currentFilter === "signed") {
+      return docs.filter(
+        (d) =>
+          d.status.toLowerCase() === "signed" ||
+          d.status.toLowerCase() === "approved",
+      );
+    }
 
-    documents.forEach(function(documentItem,index){
+    return docs;
+  }
 
-        if(documentItem.status === "Pending"){
-            pendingCount++;
-        }
-        else if(documentItem.status === "Approved"){
-            approvedCount++;
-        }
-        else if(documentItem.status === "Rejected"){
-            rejectedCount++;
-        }
+  function refreshCurrentList() {
+    renderPendingList(getFilteredItems());
+  }
 
-        tableBody.innerHTML += `
-            <tr>
-                <td>${documentItem.title}</td>
-                <td>${documentItem.type}</td>
-                <td>${documentItem.status}</td>
-                <td>
-                    <button
-                        class="view-button"
-                        data-index="${index}">
-                        View
-                    </button>
-                </td>
-            </tr>
-        `;
+  function formatDateISO(iso) {
+    try {
+      return new Date(iso).toLocaleString();
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  function renderPendingList(items) {
+    pendingList.innerHTML = "";
+    if (items.length === 0) {
+      pendingList.innerHTML =
+        '<div style="color:#64748b">No documents found.</div>';
+      return;
+    }
+
+    currentItems = items;
+    items.forEach((d) => {
+      const article = document.createElement("article");
+      article.className = "pending-item";
+      article.dataset.id = d.id;
+      article.innerHTML = `
+        <div class="meta">${d.docNumber} <span class="priority ${d.priority.toLowerCase()}">${d.priority}</span></div>
+        <h3>${d.title}</h3>
+        <div class="sub">${d.category} · ${d.department}</div>
+        <div class="time">${formatDateISO(d.uploadedAt)}</div>
+      `;
+      article.addEventListener("click", () => {
+        selectedDoc = d;
+        pendingList
+          .querySelectorAll(".pending-item.selected")
+          .forEach((item) => item.classList.remove("selected"));
+        article.classList.add("selected");
+        renderPreview(d);
+      });
+      article.addEventListener("mouseover", () => {
+        article.style.cursor = "pointer";
+      });
+      pendingList.appendChild(article);
     });
+  }
 
-    document.getElementById(
-        "pending-count"
-    ).textContent = pendingCount;
+  function renderPreview(doc) {
+    if (!doc) {
+      previewPanel.innerHTML = `<div class="panel-card preview-card"><div class="preview-empty"><div class="preview-icon">🗂️</div><h3>Select a Document</h3><p>Choose a document from the list to preview and take action</p></div></div>`;
+      return;
+    }
 
-    document.getElementById(
-        "approved-count"
-    ).textContent = approvedCount;
+    const embedHtml = doc.file
+      ? `<iframe src="${doc.file}" style="width:100%;height:520px;border:0;border-radius:8px"></iframe>`
+      : `<div style="margin-top:18px;color:#374151">No file available for preview.</div>`;
 
-    document.getElementById(
-        "rejected-count"
-    ).textContent = rejectedCount;
+    previewPanel.innerHTML = `
+      <div class="panel-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+          <div>
+            <div style="font-size:13px;color:#6b7280">${doc.docNumber} · ${doc.category} · ${doc.department}</div>
+            <div style="font-size:20px;font-weight:700;margin-top:6px">${doc.title}</div>
+            <div style="color:#6b7280;margin-top:8px">Status: ${doc.status} · Priority: ${doc.priority}</div>
+          </div>
+          <div class="action-row">
+            <button id="open-doc-button" class="action-btn action-open">Open</button>
+            <button id="approve-doc-button" class="action-btn action-approve">Approve</button>
+            <button id="deny-doc-button" class="action-btn action-deny">Deny</button>
+            <button id="cancel-doc-button" class="action-btn action-cancel">Cancel</button>
+          </div>
+        </div>
+        ${embedHtml}
+      </div>
+    `;
 
-    let viewButtons =
-        document.querySelectorAll(
-            ".view-button"
-        );
+    const openButton = document.getElementById("open-doc-button");
+    const approveButton = document.getElementById("approve-doc-button");
+    const denyButton = document.getElementById("deny-doc-button");
+    const cancelButton = document.getElementById("cancel-doc-button");
 
-    viewButtons.forEach(function(button){
+    if (openButton) {
+      openButton.addEventListener("click", () => {
+        const target = doc.file || doc.url;
+        if (target) {
+          window.open(target, "_blank");
+        }
+      });
+    }
 
-        button.addEventListener(
-            "click",
-            function(){
+    if (approveButton) {
+      approveButton.addEventListener("click", () => {
+        if (selectedDoc) {
+          selectedDoc.status = "Approved";
+          updateStats();
+          refreshCurrentList();
+          const currentFiltered = getFilteredItems();
+          if (!currentFiltered.includes(selectedDoc)) {
+            selectedDoc = null;
+            renderPreview(null);
+          } else {
+            renderPreview(selectedDoc);
+          }
+          alert("Document approved.");
+        }
+      });
+    }
 
-                let documentIndex =
-                    this.dataset.index;
+    if (denyButton) {
+      denyButton.addEventListener("click", () => {
+        if (selectedDoc) {
+          selectedDoc.status = "Denied";
+          updateStats();
+          refreshCurrentList();
+          const currentFiltered = getFilteredItems();
+          if (!currentFiltered.includes(selectedDoc)) {
+            selectedDoc = null;
+            renderPreview(null);
+          } else {
+            renderPreview(selectedDoc);
+          }
+          alert("Document denied.");
+        }
+      });
+    }
 
-                selectedDocument =
-                    documents[documentIndex];
+    if (cancelButton) {
+      cancelButton.addEventListener("click", () => {
+        selectedDoc = null;
+        pendingList
+          .querySelectorAll(".pending-item.selected")
+          .forEach((item) => item.classList.remove("selected"));
+        renderPreview(null);
+      });
+    }
+  }
 
-                displayDocumentDetails(
-                    selectedDocument
-                );
-            }
-        );
-    });
-})
-.catch(function(error){
+  function updateStats() {
+    const now = new Date();
+    const pendingCount = docs.filter(
+      (d) => d.status.toLowerCase() === "pending",
+    ).length;
+    const totalSigned = docs.filter(
+      (d) =>
+        d.status.toLowerCase() === "signed" ||
+        d.status.toLowerCase() === "approved",
+    ).length;
+    const signedToday = docs.filter((d) => {
+      if (!d.signedAt) return false;
+      const dt = new Date(d.signedAt);
+      return (
+        dt.getFullYear() === now.getFullYear() &&
+        dt.getMonth() === now.getMonth() &&
+        dt.getDate() === now.getDate()
+      );
+    }).length;
 
-    console.error(error);
-
-    alert(
-        "Failed to load documents."
+    statPending.querySelector(".stat-number")?.remove();
+    statPending.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="stat-number">${pendingCount}</div>`,
     );
+
+    statSignedToday.querySelector(".stat-number")?.remove();
+    statSignedToday.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="stat-number">${signedToday}</div>`,
+    );
+
+    statTotalSigned.querySelector(".stat-number")?.remove();
+    statTotalSigned.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="stat-number">${totalSigned}</div>`,
+    );
+  }
+
+  function attachStatHandlers() {
+    statPending.addEventListener("click", () => {
+      currentFilter = "pending";
+      renderPendingList(getFilteredItems());
+      renderPreview(null);
+    });
+
+    statSignedToday.addEventListener("click", () => {
+      currentFilter = "today";
+      renderPendingList(getFilteredItems());
+      renderPreview(null);
+    });
+
+    statTotalSigned.addEventListener("click", () => {
+      currentFilter = "signed";
+      renderPendingList(getFilteredItems());
+      renderPreview(null);
+    });
+  }
+
+  async function init() {
+    try {
+      const res = await fetch(DATA_URL);
+      docs = await res.json();
+    } catch (e) {
+      console.error("Failed to load documents", e);
+      docs = [];
+    }
+
+    updateStats();
+    attachStatHandlers();
+    renderPendingList(docs.filter((d) => d.status.toLowerCase() === "pending"));
+    renderPreview(null);
+  }
+
+  init();
 });
-
-function displayDocumentDetails(
-    documentItem
-){
-
-    document.getElementById(
-        "document-title"
-    ).textContent =
-        documentItem.title;
-
-    document.getElementById(
-        "document-type"
-    ).textContent =
-        documentItem.type;
-
-    document.getElementById(
-        "document-status"
-    ).textContent =
-        documentItem.status;
-}
-
-document
-.getElementById(
-    "approve-document-button"
-)
-.addEventListener(
-    "click",
-    function(){
-
-        if(selectedDocument){
-
-            document.getElementById(
-                "document-status"
-            ).textContent =
-                "Approved";
-
-            alert(
-                "Document approved successfully."
-            );
-        }
-        else{
-
-            alert(
-                "Select a document first."
-            );
-        }
-    }
-);
-
-document
-.getElementById(
-    "reject-document-button"
-)
-.addEventListener(
-    "click",
-    function(){
-
-        if(selectedDocument){
-
-            document.getElementById(
-                "document-status"
-            ).textContent =
-                "Rejected";
-
-            alert(
-                "Document rejected."
-            );
-        }
-        else{
-
-            alert(
-                "Select a document first."
-            );
-        }
-    }
-);
-
-document
-.getElementById(
-    "request-form"
-)
-.addEventListener(
-    "submit",
-    function(event){
-
-        event.preventDefault();
-
-        alert(
-            "Request submitted successfully!"
-        );
-
-        this.reset();
-    }
-);

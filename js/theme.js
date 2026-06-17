@@ -11,7 +11,6 @@
   }
 
   function initTheme() {
-    // Check localStorage for saved preference
     const savedTheme = localStorage.getItem(THEME_KEY);
     const isDarkMode = savedTheme === "dark";
     applyTheme(isDarkMode);
@@ -22,13 +21,24 @@
     localStorage.setItem(THEME_KEY, isDarkMode ? "dark" : "light");
   }
 
-  // Initialize theme on page load
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initTheme);
-  } else {
-    initTheme();
+  function attachThemeToggle() {
+    const themeButtons = document.querySelectorAll("#themeToggle");
+    themeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        toggleTheme();
+      });
+    });
   }
 
-  // Make toggleTheme globally available
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      attachThemeToggle();
+    });
+  } else {
+    initTheme();
+    attachThemeToggle();
+  }
+
   window.toggleTheme = toggleTheme;
 })();
